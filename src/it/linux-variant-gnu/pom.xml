@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>it</groupId>
+  <artifactId>linux-variant-gnu</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>@plugin.groupId@</groupId>
+        <artifactId>@plugin.artifactId@</artifactId>
+        <version>@plugin.version@</version>
+        <executions>
+          <execution>
+            <goals><goal>check</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>1.0.0</version>
+          <linuxVariant>gnu</linuxVariant>
+          <downloadBaseUrl>http://127.0.0.1:9</downloadBaseUrl>
+          <scanDirectories>
+            <scanDirectory>
+              <directory>docs</directory>
+              <includes><include>**/*.md</include></includes>
+            </scanDirectory>
+          </scanDirectories>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

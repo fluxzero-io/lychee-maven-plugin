@@ -1,0 +1,20 @@
+name: Bot Auto Merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  enable-automerge:
+    if: github.actor == 'dependabot[bot]' || github.actor == 'release-please[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable PR auto-merge (squash)
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash

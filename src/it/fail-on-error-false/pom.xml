@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>it</groupId>
+  <artifactId>fail-on-error-false</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <properties>
+    <lychee.test.version>1.2.3</lychee.test.version>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/lychee-bin/lychee-v${lychee.test.version}"/>
+                <copy file="${project.basedir}/fake-lychee.sh"
+                      tofile="${project.build.directory}/lychee-bin/lychee-v${lychee.test.version}/lychee"/>
+                <chmod file="${project.build.directory}/lychee-bin/lychee-v${lychee.test.version}/lychee" perm="755"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>@plugin.groupId@</groupId>
+        <artifactId>@plugin.artifactId@</artifactId>
+        <version>@plugin.version@</version>
+        <executions>
+          <execution>
+            <goals><goal>check</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>${lychee.test.version}</version>
+          <installDirectory>${project.build.directory}/lychee-bin</installDirectory>
+          <scanDirectories>
+            <scanDirectory>
+              <directory>docs</directory>
+              <includes>
+                <include>**/*.md</include>
+              </includes>
+            </scanDirectory>
+          </scanDirectories>
+          <failOnError>false</failOnError>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
