@@ -3,7 +3,7 @@
 
   <groupId>io.fluxzero</groupId>
   <artifactId>lychee-maven-plugin</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.1</version>
   <packaging>maven-plugin</packaging>
 
   <name>Lychee Maven Plugin</name>
