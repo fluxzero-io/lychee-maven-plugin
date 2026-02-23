@@ -14,7 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Enable PR auto-merge (squash)
+        id: enable_automerge
+        continue-on-error: true
         uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
         with:
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: squash
+
+      - name: Auto-merge not enabled
+        if: steps.enable_automerge.outcome == 'failure'
+        run: echo "Could not enable auto-merge in this workflow context; leaving PR for manual merge."
