@@ -15,10 +15,6 @@ jobs:
   build:
     if: github.event_name != 'pull_request_target' || github.actor == 'github-actions[bot]' || github.actor == 'release-please[bot]'
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [17, 21]
 
     steps:
       - name: Checkout
@@ -30,7 +26,7 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: ${{ matrix.java }}
+          java-version: '17'
           cache: maven
 
       - name: Build, unit+integration tests, package
@@ -42,7 +38,7 @@ jobs:
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: sbom-${{ matrix.java }}
+          name: sbom-17
           path: |
             target/bom.xml
             target/bom.json
