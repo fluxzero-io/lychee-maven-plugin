@@ -29,11 +29,6 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Configure Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-        with:
-          enablement: true
-
       - name: Build Maven site
         run: ./mvnw -B site
 
