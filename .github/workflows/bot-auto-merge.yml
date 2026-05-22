@@ -10,7 +10,17 @@ permissions:
 
 jobs:
   enable-automerge:
-    if: github.actor == 'release-please[bot]' && github.event.pull_request.user.login == 'release-please[bot]'
+    if: >
+      github.repository == 'fluxzero-io/lychee-maven-plugin' &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        (
+          github.actor == 'release-please[bot]' &&
+          github.event.pull_request.user.login == 'release-please[bot]'
+        ) ||
+        startsWith(github.event.pull_request.head.ref, 'release-please--branches--main--components--lychee-maven-plugin')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Enable PR auto-merge (squash)
