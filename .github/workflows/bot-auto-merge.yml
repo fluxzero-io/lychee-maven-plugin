@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   enable-automerge:
-    if: github.actor == 'dependabot[bot]' || github.actor == 'release-please[bot]'
+    if: github.actor == 'release-please[bot]' && github.event.pull_request.user.login == 'release-please[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Enable PR auto-merge (squash)
