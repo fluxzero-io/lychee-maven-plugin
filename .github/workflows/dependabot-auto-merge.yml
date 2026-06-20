@@ -42,12 +42,12 @@ jobs:
 
           case "$PACKAGE_ECOSYSTEM" in
             github-actions|github_actions)
-              gh pr merge "$PR_URL" --auto --rebase
+              gh pr merge "$PR_URL" --auto --squash
               ;;
             *)
               case "$UPDATE_TYPE" in
                 version-update:semver-patch|version-update:semver-minor)
-                  gh pr merge "$PR_URL" --auto --rebase
+                  gh pr merge "$PR_URL" --auto --squash
                   ;;
                 *)
                   echo "Dependabot update type '$UPDATE_TYPE' for '$PACKAGE_ECOSYSTEM' is not auto-merged."
