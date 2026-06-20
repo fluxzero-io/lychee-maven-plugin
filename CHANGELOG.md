@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.1...lychee-maven-plugin-v0.1.2) (2026-06-20)
+
+
+### Fixes
+
+* publish using MAVEN_GPG_PASSPHRASE ([de21ad9](https://github.com/fluxzero-io/lychee-maven-plugin/commit/de21ad9ac425c3104fcb2865f35d64db6c651eb8))
+
 ## [0.1.1](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.0...lychee-maven-plugin-v0.1.1) (2026-02-23)
 
 
