@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.4...lychee-maven-plugin-v0.2.0) (2026-06-20)
+
+
+### Features
+
+* use lychee native output for clickable links ([a9b3eaa](https://github.com/fluxzero-io/lychee-maven-plugin/commit/a9b3eaad8b1a19ca5c60e0ab122e7816d84f8851))
+
 ## [0.1.4](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.3...lychee-maven-plugin-v0.1.4) (2026-06-20)
 
 
