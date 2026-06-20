@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.3...lychee-maven-plugin-v0.1.4) (2026-06-20)
+
+
+### Dependencies
+
+* bump actions/setup-java from 5.2.0 to 5.3.0 ([#26](https://github.com/fluxzero-io/lychee-maven-plugin/issues/26)) ([748b84c](https://github.com/fluxzero-io/lychee-maven-plugin/commit/748b84c0c8829d7b3ac24726c45944328c7dd9e0))
+* bump org.apache.maven.plugins:maven-surefire-plugin ([#24](https://github.com/fluxzero-io/lychee-maven-plugin/issues/24)) ([43eb9b2](https://github.com/fluxzero-io/lychee-maven-plugin/commit/43eb9b2306d72e65d686a37595612167aef9c9f7))
+
 ## [0.1.3](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.1.2...lychee-maven-plugin-v0.1.3) (2026-06-20)
 
 
