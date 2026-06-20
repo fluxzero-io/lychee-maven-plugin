@@ -17,14 +17,21 @@ class LycheePlatformTest {
     @Test
     void resolvesMacArm64() {
         assertEquals(
-                "lychee-arm64-macos.tar.gz",
+                "lychee-aarch64-apple-darwin.tar.gz",
                 LycheePlatform.resolveAssetName("Mac OS X", "aarch64", "gnu"));
+    }
+
+    @Test
+    void resolvesMacX64() {
+        assertEquals(
+                "lychee-x86_64-apple-darwin.tar.gz",
+                LycheePlatform.resolveAssetName("Mac OS X", "x86_64", "gnu"));
     }
 
     @Test
     void resolvesWindowsX64() {
         assertEquals(
-                "lychee-x86_64-windows.exe",
+                "lychee-x86_64-pc-windows-msvc.zip",
                 LycheePlatform.resolveAssetName("Windows 11", "x86_64", "gnu"));
     }
 
@@ -32,6 +39,6 @@ class LycheePlatformTest {
     void failsOnUnsupportedMacArch() {
         assertThrows(
                 IllegalStateException.class,
-                () -> LycheePlatform.resolveAssetName("Mac OS X", "x86_64", "gnu"));
+                () -> LycheePlatform.resolveAssetName("Mac OS X", "i686", "gnu"));
     }
 }

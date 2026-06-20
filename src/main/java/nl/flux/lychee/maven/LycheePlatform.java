@@ -17,14 +17,17 @@ final class LycheePlatform {
             if (!"x86_64".equals(normalizedArch)) {
                 throw new IllegalStateException("Lychee release assets currently support only x86_64 on Windows.");
             }
-            return "lychee-x86_64-windows.exe";
+            return "lychee-x86_64-pc-windows-msvc.zip";
         }
 
         if ("macos".equals(normalizedOs)) {
             if ("aarch64".equals(normalizedArch) || "arm64".equals(normalizedArch)) {
-                return "lychee-arm64-macos.tar.gz";
+                return "lychee-aarch64-apple-darwin.tar.gz";
             }
-            throw new IllegalStateException("Lychee release assets currently support only arm64 on macOS.");
+            if ("x86_64".equals(normalizedArch)) {
+                return "lychee-x86_64-apple-darwin.tar.gz";
+            }
+            throw new IllegalStateException("Unsupported macOS architecture for lychee: " + osArch);
         }
 
         if ("linux".equals(normalizedOs)) {

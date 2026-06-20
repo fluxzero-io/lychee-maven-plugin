@@ -18,53 +18,32 @@ class LycheeChecksumVerificationTest {
     @Test
     void officialGithubReleaseDownloadIsDetected() {
         assertTrue(LycheeCheckMojo.isOfficialGithubReleaseDownload(
-                URI.create("https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-x86_64-unknown-linux-gnu.tar.gz")));
+                URI.create("https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-unknown-linux-gnu.tar.gz")));
         assertFalse(LycheeCheckMojo.isOfficialGithubReleaseDownload(
-                URI.create("https://example.com/releases/lychee-v0.23.0/lychee.tar.gz")));
+                URI.create("https://example.com/releases/lychee-v0.24.2/lychee.tar.gz")));
     }
 
     @Test
-    void findsSha256DigestForExpectedAsset() {
-        String json = """
-                {
-                  "assets": [
-                    {
-                      "name": "lychee-x86_64-unknown-linux-gnu.tar.gz",
-                      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                    },
-                    {
-                      "name": "lychee-arm64-macos.tar.gz",
-                      "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-                    }
-                  ]
-                }
-                """;
+    void findsSha256DigestInSidecarWithFilename() {
+        String sidecar = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  lychee-aarch64-apple-darwin.tar.gz";
 
-        String digest = LycheeCheckMojo.findSha256DigestForAsset(
-                json,
-                "lychee-arm64-macos.tar.gz");
+        String digest = LycheeCheckMojo.findSha256DigestInText(sidecar);
 
         assertEquals("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", digest);
     }
 
     @Test
-    void returnsNullWhenDigestMissingOrAssetNotFound() {
-        String json = """
-                {
-                  "assets": [
-                    {
-                      "name": "lychee-x86_64-unknown-linux-gnu.tar.gz"
-                    }
-                  ]
-                }
-                """;
+    void findsSha256DigestWithPrefix() {
+        String digest = LycheeCheckMojo.findSha256DigestInText(
+                "sha256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
-        assertNull(LycheeCheckMojo.findSha256DigestForAsset(
-                json,
-                "lychee-x86_64-unknown-linux-gnu.tar.gz"));
-        assertNull(LycheeCheckMojo.findSha256DigestForAsset(
-                json,
-                "lychee-arm64-macos.tar.gz"));
+        assertEquals("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", digest);
+    }
+
+    @Test
+    void returnsNullWhenDigestMissing() {
+        assertNull(LycheeCheckMojo.findSha256DigestInText("not-a-checksum"));
+        assertNull(LycheeCheckMojo.findSha256DigestInText(null));
     }
 
     @Test

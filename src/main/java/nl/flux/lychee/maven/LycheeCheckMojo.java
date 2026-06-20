@@ -30,14 +30,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntPredicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -60,11 +57,13 @@ import org.codehaus.plexus.util.DirectoryScanner;
 @Mojo(name = "check", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class LycheeCheckMojo extends AbstractMojo {
 
-    static final String DEFAULT_LYCHEE_VERSION = "0.23.0";
+    static final String DEFAULT_LYCHEE_VERSION = "0.24.2";
     static final String OFFICIAL_RELEASE_BASE_URL = "https://github.com/lycheeverse/lychee/releases/download";
-    static final String RELEASE_TAG_API_BASE_URL = "https://api.github.com/repos/lycheeverse/lychee/releases/tags";
     static final int CONNECT_TIMEOUT_SECONDS = 30;
     static final int READ_TIMEOUT_SECONDS = 120;
+    static final Pattern SHA256_PATTERN = Pattern.compile("(?:sha256:)?([0-9a-fA-F]{64})");
+    static final Pattern LYCHEE_SOURCE_HEADER_PATTERN = Pattern.compile("^\\[(.+)]\\:$");
+    static final Pattern LYCHEE_LOCATION_PATTERN = Pattern.compile("\\(at\\s+(\\d+)(?::(\\d+))?\\)");
     static final List<String> DEFAULT_INCLUDES = Arrays.asList(
             "**/*.md",
             "**/*.markdown",
@@ -224,7 +223,7 @@ public class LycheeCheckMojo extends AbstractMojo {
                 throw new MojoExecutionException(
                         "Failed to download lychee binary. HTTP " + response.statusCode() + " from " + downloadUri);
             }
-            verifyDownloadedAssetChecksumIfSupported(downloadUri, resolvedAsset, version, downloaded, targetDir);
+            verifyDownloadedAssetChecksumIfSupported(downloadUri, resolvedAsset, downloaded);
 
             if (resolvedAsset.endsWith(".tar.gz")) {
                 extractTarGz(downloaded, targetDir, binary);
@@ -246,15 +245,14 @@ public class LycheeCheckMojo extends AbstractMojo {
         }
     }
 
-    private void verifyDownloadedAssetChecksumIfSupported(
-            URI downloadUri, String resolvedAsset, String resolvedVersion, Path downloadedAsset, Path targetDir)
+    private void verifyDownloadedAssetChecksumIfSupported(URI downloadUri, String resolvedAsset, Path downloadedAsset)
             throws IOException, InterruptedException, MojoExecutionException {
         if (!verifyChecksum) {
             getLog().warn("Skipping SHA-256 verification because lychee.verifyChecksum=false.");
             return;
         }
 
-        String expectedSha256 = resolveExpectedSha256(downloadUri, resolvedAsset, resolvedVersion, targetDir);
+        String expectedSha256 = resolveExpectedSha256(downloadUri);
         if (expectedSha256 == null) {
             getLog().warn("Skipping SHA-256 verification because no expected digest is available.");
             return;
@@ -268,7 +266,7 @@ public class LycheeCheckMojo extends AbstractMojo {
         getLog().info("Verified SHA-256 for downloaded lychee asset.");
     }
 
-    private String resolveExpectedSha256(URI downloadUri, String resolvedAsset, String resolvedVersion, Path targetDir)
+    private String resolveExpectedSha256(URI downloadUri)
             throws IOException, InterruptedException, MojoExecutionException {
         String normalizedConfigured = normalizeSha256(expectedSha256);
         if (normalizedConfigured != null) {
@@ -280,38 +278,31 @@ public class LycheeCheckMojo extends AbstractMojo {
             return null;
         }
 
-        Path metadataCache = targetDir.resolve("release-metadata.json");
-        if (Files.isRegularFile(metadataCache)) {
-            String cachedJson = Files.readString(metadataCache, StandardCharsets.UTF_8);
-            String cachedDigest = findSha256DigestForAsset(cachedJson, resolvedAsset);
-            if (cachedDigest != null) {
-                getLog().debug("Using cached release metadata for SHA-256 verification.");
-                return cachedDigest;
-            }
-        }
-
-        URI releaseMetadataUri = URI.create(RELEASE_TAG_API_BASE_URL + "/lychee-v" + resolvedVersion);
+        URI checksumUri = URI.create(downloadUri + ".sha256");
         //noinspection resource
-        HttpClient client = createHttpClient(releaseMetadataUri);
-        HttpRequest metadataRequest = HttpRequest.newBuilder(releaseMetadataUri)
+        HttpClient client = createHttpClient(checksumUri);
+        HttpRequest checksumRequest = HttpRequest.newBuilder(checksumUri)
                 .timeout(Duration.ofSeconds(READ_TIMEOUT_SECONDS))
-                .header("Accept", "application/vnd.github+json")
+                .header("Accept", "text/plain, application/octet-stream;q=0.9, */*;q=0.8")
                 .GET()
                 .build();
-        HttpResponse<String> metadataResponse = sendWithRetry(
+        HttpResponse<String> checksumResponse = sendWithRetry(
                 client,
-                metadataRequest,
+                checksumRequest,
                 HttpResponse.BodyHandlers.ofString(),
-                "release metadata download",
+                "checksum sidecar download",
                 statusCode -> statusCode >= 500);
-        if (metadataResponse.statusCode() >= 400) {
-            throw new MojoExecutionException(
-                    "Failed to fetch release metadata for SHA-256 verification. HTTP "
-                            + metadataResponse.statusCode() + " from " + releaseMetadataUri);
+        if (checksumResponse.statusCode() >= 400) {
+            getLog().warn("No SHA-256 sidecar available for official download. HTTP "
+                    + checksumResponse.statusCode() + " from " + checksumUri);
+            return null;
         }
 
-        Files.writeString(metadataCache, metadataResponse.body(), StandardCharsets.UTF_8);
-        return findSha256DigestForAsset(metadataResponse.body(), resolvedAsset);
+        String digest = findSha256DigestInText(checksumResponse.body());
+        if (digest == null) {
+            throw new MojoExecutionException("SHA-256 sidecar did not contain a valid digest: " + checksumUri);
+        }
+        return digest;
     }
 
     static boolean isOfficialGithubReleaseDownload(URI uri) {
@@ -322,37 +313,13 @@ public class LycheeCheckMojo extends AbstractMojo {
         return normalized.startsWith(OFFICIAL_RELEASE_BASE_URL + "/");
     }
 
-    static String findSha256DigestForAsset(String releaseMetadataJson, String expectedAssetName) {
-        if (releaseMetadataJson == null || expectedAssetName == null || expectedAssetName.isBlank()) {
+    static String findSha256DigestInText(String value) {
+        if (value == null || value.isBlank()) {
             return null;
         }
 
-        JsonObject root = JsonParser.parseString(releaseMetadataJson).getAsJsonObject();
-        JsonArray assets = root.getAsJsonArray("assets");
-        if (assets == null) {
-            return null;
-        }
-
-        for (JsonElement element : assets) {
-            if (!element.isJsonObject()) {
-                continue;
-            }
-            JsonObject asset = element.getAsJsonObject();
-            JsonElement nameElement = asset.get("name");
-            if (nameElement == null || !expectedAssetName.equals(nameElement.getAsString())) {
-                continue;
-            }
-            JsonElement digestElement = asset.get("digest");
-            if (digestElement == null) {
-                return null;
-            }
-            String digest = digestElement.getAsString();
-            if (!digest.startsWith("sha256:")) {
-                return null;
-            }
-            return digest.substring("sha256:".length());
-        }
-        return null;
+        java.util.regex.Matcher matcher = SHA256_PATTERN.matcher(value);
+        return matcher.find() ? matcher.group(1).toLowerCase() : null;
     }
 
     static String normalizeSha256(String value) throws MojoExecutionException {
@@ -360,7 +327,7 @@ public class LycheeCheckMojo extends AbstractMojo {
             return null;
         }
         String normalized = value.trim();
-        if (normalized.startsWith("sha256:")) {
+        if (normalized.regionMatches(true, 0, "sha256:", 0, "sha256:".length())) {
             normalized = normalized.substring("sha256:".length());
         }
         normalized = normalized.toLowerCase();
@@ -617,36 +584,153 @@ public class LycheeCheckMojo extends AbstractMojo {
     }
 
     private int runLychee(Path binary, List<Path> documents) throws MojoExecutionException {
-        List<String> command = new ArrayList<>();
-        command.add(binary.toAbsolutePath().toString());
-        if (args != null && !args.isEmpty()) {
-            command.addAll(args);
-        }
-        for (Path document : documents) {
-            command.add(document.toString());
-        }
-
-        getLog().info("Executing lychee: " + String.join(" ", command));
-
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(baseDirectory);
-        processBuilder.redirectErrorStream(true);
-
+        Path inputList = null;
         try {
+            inputList = writeLycheeInputList(documents);
+
+            List<String> command = new ArrayList<>();
+            command.add(binary.toAbsolutePath().toString());
+            command.addAll(normalizeArgsForClickableOutput(args));
+            command.add("--files-from");
+            command.add(inputList.toString());
+
+            getLog().info("Executing lychee: " + String.join(" ", command));
+
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.directory(baseDirectory);
+            processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
+            StringBuilder output = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    getLog().info("[lychee] " + line);
+                    if (output.length() > 0) {
+                        output.append('\n');
+                    }
+                    output.append(line);
                 }
             }
-            return process.waitFor();
+            int exitCode = process.waitFor();
+            for (LycheeOutputLine line : formatLycheeOutputForConsole(output.toString(), baseDirectory.toPath())) {
+                if (line.message().isBlank()) {
+                    continue;
+                }
+                if (line.issue()) {
+                    getLog().warn(line.message());
+                } else {
+                    getLog().info("[lychee] " + line.message());
+                }
+            }
+            return exitCode;
         } catch (IOException e) {
             throw new MojoExecutionException("Failed to execute lychee binary", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new MojoExecutionException("Execution interrupted", e);
+        } finally {
+            if (inputList != null) {
+                try {
+                    Files.deleteIfExists(inputList);
+                } catch (IOException e) {
+                    getLog().debug("Could not delete temporary lychee input list: " + inputList, e);
+                }
+            }
+        }
+    }
+
+    private Path writeLycheeInputList(List<Path> documents) throws IOException {
+        Path inputDirectory = installDirectory.toPath();
+        Files.createDirectories(inputDirectory);
+        Path inputList = Files.createTempFile(inputDirectory, "lychee-inputs-", ".txt");
+        Files.write(inputList, documents.stream().map(Path::toString).toList(), StandardCharsets.UTF_8);
+        return inputList;
+    }
+
+    static List<String> normalizeArgsForClickableOutput(List<String> originalArgs) {
+        List<String> normalized = new ArrayList<>();
+        boolean noProgressConfigured = false;
+        if (originalArgs != null) {
+            for (int i = 0; i < originalArgs.size(); i++) {
+                String arg = originalArgs.get(i);
+                if (arg == null || arg.isBlank()) {
+                    continue;
+                }
+
+                if ("--format".equals(arg) || "-f".equals(arg)) {
+                    i++;
+                    continue;
+                }
+
+                if (arg.startsWith("--format=") || arg.startsWith("-f=")) {
+                    continue;
+                }
+
+                if ("--mode".equals(arg)) {
+                    i++;
+                    continue;
+                }
+
+                if (arg.startsWith("--mode=")) {
+                    continue;
+                }
+
+                if ("--no-progress".equals(arg) || "-n".equals(arg) || arg.startsWith("--no-progress=")) {
+                    noProgressConfigured = true;
+                }
+
+                normalized.add(arg);
+            }
+        }
+
+        normalized.add("--format");
+        normalized.add("compact");
+        normalized.add("--mode");
+        normalized.add("plain");
+        if (!noProgressConfigured) {
+            normalized.add("--no-progress");
+        }
+        return normalized;
+    }
+
+    static List<LycheeOutputLine> formatLycheeOutputForConsole(String lycheeOutput, Path baseDirectoryPath) {
+        if (lycheeOutput == null || lycheeOutput.isBlank()) {
+            return List.of();
+        }
+
+        List<LycheeOutputLine> formatted = new ArrayList<>();
+        Path currentSource = null;
+        for (String line : lycheeOutput.split("\\R")) {
+            Matcher headerMatcher = LYCHEE_SOURCE_HEADER_PATTERN.matcher(line);
+            if (headerMatcher.matches()) {
+                currentSource = resolveSourcePath(baseDirectoryPath, headerMatcher.group(1));
+                formatted.add(new LycheeOutputLine(line, false));
+                continue;
+            }
+
+            Matcher locationMatcher = LYCHEE_LOCATION_PATTERN.matcher(line);
+            if (currentSource != null && locationMatcher.find()) {
+                String location = currentSource + ":" + locationMatcher.group(1);
+                if (locationMatcher.group(2) != null) {
+                    location += ":" + locationMatcher.group(2);
+                }
+                formatted.add(new LycheeOutputLine(location + ": " + line, true));
+            } else {
+                formatted.add(new LycheeOutputLine(line, false));
+            }
+        }
+        return formatted;
+    }
+
+    private static Path resolveSourcePath(Path baseDirectoryPath, String sourceFile) {
+        try {
+            Path candidate = Paths.get(sourceFile);
+            if (!candidate.isAbsolute()) {
+                candidate = baseDirectoryPath.resolve(candidate);
+            }
+            return candidate.toAbsolutePath().normalize();
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 
@@ -664,6 +748,9 @@ public class LycheeCheckMojo extends AbstractMojo {
         fileSet.setIncludes(new ArrayList<>(DEFAULT_INCLUDES));
         fileSet.setExcludes(new ArrayList<>(DEFAULT_EXCLUDES));
         return fileSet;
+    }
+
+    record LycheeOutputLine(String message, boolean issue) {
     }
 
     private record ProxyCredentials(String host, int port, String username, String password) {
