@@ -14,13 +14,17 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_APP_CLIENT_ID: ${{ secrets.DEPENDABOT_AUTOMERGE_APP_CLIENT_ID }}
+      RELEASE_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_AUTOMERGE_APP_PRIVATE_KEY }}
     steps:
       - name: Create app token
         id: app-token
+        if: env.RELEASE_APP_CLIENT_ID != '' && env.RELEASE_APP_PRIVATE_KEY != ''
         uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ secrets.DEPENDABOT_AUTOMERGE_APP_CLIENT_ID }}
-          private-key: ${{ secrets.DEPENDABOT_AUTOMERGE_APP_PRIVATE_KEY }}
+          client-id: ${{ env.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ env.RELEASE_APP_PRIVATE_KEY }}
           permission-contents: write
           permission-issues: write
           permission-pull-requests: write
@@ -28,6 +32,6 @@ jobs:
       - name: Release Please
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
