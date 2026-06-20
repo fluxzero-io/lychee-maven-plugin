@@ -23,14 +23,17 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
-      - name: Enable PR auto-merge (squash)
-        id: enable_automerge
-        continue-on-error: true
-        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
+      - name: Create app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
         with:
-          pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
+          client-id: ${{ secrets.FLUXZERO_BOT_APP_ID }}
+          private-key: ${{ secrets.FLUXZERO_BOT_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
-      - name: Auto-merge not enabled
-        if: steps.enable_automerge.outcome == 'failure'
-        run: echo "Could not enable auto-merge in this workflow context; leaving PR for manual merge."
+      - name: Enable PR auto-merge (squash)
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge "$PR_URL" --auto --squash
