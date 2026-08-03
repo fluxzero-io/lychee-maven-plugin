@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.6...lychee-maven-plugin-v0.2.7) (2026-08-03)
+
+
+### Dependencies
+
+* bump org.cyclonedx:cyclonedx-maven-plugin from 2.9.2 to 2.9.3 ([#55](https://github.com/fluxzero-io/lychee-maven-plugin/issues/55)) ([8b57c0d](https://github.com/fluxzero-io/lychee-maven-plugin/commit/8b57c0dd4ed1ba3f84c474799499dea62f6b9e79))
+
 ## [0.2.6](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.5...lychee-maven-plugin-v0.2.6) (2026-07-20)
 
 
