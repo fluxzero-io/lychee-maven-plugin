@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.7...lychee-maven-plugin-v0.2.8) (2026-08-10)
+
+
+### Dependencies
+
+* bump junit.version from 6.1.2 to 6.1.3 ([#59](https://github.com/fluxzero-io/lychee-maven-plugin/issues/59)) ([053f561](https://github.com/fluxzero-io/lychee-maven-plugin/commit/053f561ab8ffa2fd05899e47e23991b92fa73ea6))
+
 ## [0.2.7](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.6...lychee-maven-plugin-v0.2.7) (2026-08-03)
 
 
