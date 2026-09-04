@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.13](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.12...lychee-maven-plugin-v0.2.13) (2026-09-04)
+
+
+### Dependencies
+
+* bump actions/deploy-pages from 5.0.0 to 5.0.1 ([#74](https://github.com/fluxzero-io/lychee-maven-plugin/issues/74)) ([f9e84a1](https://github.com/fluxzero-io/lychee-maven-plugin/commit/f9e84a1073e96d7b18e3d4108deb9de90c809649))
+
 ## [0.2.12](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.11...lychee-maven-plugin-v0.2.12) (2026-09-03)
 
 
