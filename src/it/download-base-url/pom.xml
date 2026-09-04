@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it</groupId>
   <artifactId>download-base-url</artifactId>
-  <version>0.2.13</version>
+  <version>0.2.14-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
