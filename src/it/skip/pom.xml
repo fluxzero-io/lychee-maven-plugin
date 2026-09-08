@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it</groupId>
   <artifactId>skip</artifactId>
-  <version>0.2.14</version>
+  <version>0.2.15-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
