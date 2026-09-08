@@ -28,7 +28,7 @@ jobs:
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY || secrets.OSSRH_SIGNING_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Prepare release artifacts
         env:
