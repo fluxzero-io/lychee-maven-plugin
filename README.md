@@ -123,7 +123,7 @@ This generates standard Maven Plugin documentation from descriptors in `target/s
   - `GPG_PASSPHRASE`
 - `./mvnw -Prelease deploy` publishes signed artifacts to `https://packages.fluxzero.io/publish/maven`.
   GitHub Actions uses `.github/maven-settings.xml` with a short-lived OIDC token;
-  the audience remains `https://packages.fluxzero.io/maven`.
+  the audience is `https://packages.fluxzero.io/publish/maven`.
 - `./mvnw -Prelease,central deploy` runs the existing Central publishing extension.
   Both profiles retain plugin metadata, sources, Javadoc and GPG signatures.
 - SBOMs are generated during `verify` at `target/bom.xml` and `target/bom.json` and uploaded by CI/release workflows.
