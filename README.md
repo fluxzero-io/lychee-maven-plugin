@@ -25,7 +25,7 @@ Maven plugin that downloads a `lychee` binary for the current OS/architecture an
     <plugin>
       <groupId>io.fluxzero</groupId>
       <artifactId>lychee-maven-plugin</artifactId>
-      <version>0.1.4</version>
+      <version>0.2.15</version>
       <executions>
         <execution>
           <goals>
@@ -131,7 +131,7 @@ This generates standard Maven Plugin documentation from descriptors in `target/s
 Verify a published release with an independent Maven project and an empty cache:
 
 ```bash
-bash .github/scripts/verify-packages-consumer.sh 0.2.14
+bash .github/scripts/verify-packages-consumer.sh 0.2.15
 ```
 
 This runs the actual lychee binary, checks a valid local link, requires a broken
