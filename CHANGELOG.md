@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.14](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.13...lychee-maven-plugin-v0.2.14) (2026-09-08)
+
+
+### Fixes
+
+* **release:** publish signed plugin to Packages before Central ([8dbde3c](https://github.com/fluxzero-io/lychee-maven-plugin/commit/8dbde3c0eee4912d3a4f27651892fdb94c5cefa9))
+
 ## [0.2.13](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.12...lychee-maven-plugin-v0.2.13) (2026-09-04)
 
 
