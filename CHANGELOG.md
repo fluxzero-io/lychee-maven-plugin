@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.15](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.14...lychee-maven-plugin-v0.2.15) (2026-09-08)
+
+
+### Fixes
+
+* **release:** use the configured Maven signing passphrase variable ([6af5e10](https://github.com/fluxzero-io/lychee-maven-plugin/commit/6af5e10401a31c66f9e188e466e2bbc7ba648fbe))
+
 ## [0.2.14](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.13...lychee-maven-plugin-v0.2.14) (2026-09-08)
 
 
