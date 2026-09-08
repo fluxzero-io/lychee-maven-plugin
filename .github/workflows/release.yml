@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - name: Checkout
@@ -29,13 +30,31 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY || secrets.OSSRH_SIGNING_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
 
+      - name: Prepare release artifacts
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE || secrets.OSSRH_SIGNING_PASSPHRASE }}
+        run: ./mvnw -B -Prelease -DskipTests verify
+
+      - name: Publish to Fluxzero Packages with GitHub OIDC
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE || secrets.OSSRH_SIGNING_PASSPHRASE }}
+        run: |
+          set +x
+          token=$(curl --fail --silent --show-error --get \
+            --data-urlencode 'audience=https://packages.fluxzero.io/publish/maven' \
+            --header "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -er '.value')
+          echo "::add-mask::$token"
+          export MAVEN_DEPLOY_TOKEN="$token"
+          ./mvnw -B -s .github/maven-settings.xml -Prelease -DskipTests deploy
+
       - name: Publish to Maven Central
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME || secrets.OSSRH_USERNAME }}
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN || secrets.OSSRH_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE || secrets.OSSRH_SIGNING_PASSPHRASE }}
         run: |
-          ./mvnw -B -Prelease \
+          ./mvnw -B -Prelease,central \
             -DskipTests \
             deploy
 
@@ -46,3 +65,8 @@ jobs:
           path: |
             target/bom.xml
             target/bom.json
+
+      - name: Verify independent Packages consumer
+        run: |
+          version=$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)
+          bash .github/scripts/verify-packages-consumer.sh "$version"

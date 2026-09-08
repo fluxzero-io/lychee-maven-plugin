@@ -251,6 +251,13 @@
     </plugins>
   </reporting>
 
+  <distributionManagement>
+    <repository>
+      <id>fluxzero</id>
+      <url>https://packages.fluxzero.io/publish/maven</url>
+    </repository>
+  </distributionManagement>
+
   <profiles>
     <profile>
       <id>release</id>
@@ -299,6 +306,13 @@
               </execution>
             </executions>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>central</id>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
