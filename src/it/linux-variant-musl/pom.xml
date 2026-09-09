@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it</groupId>
   <artifactId>linux-variant-musl</artifactId>
-  <version>0.2.17-SNAPSHOT</version>
+  <version>0.2.17</version>
   <build>
     <plugins>
       <plugin>
