@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.17](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.16...lychee-maven-plugin-v0.2.17) (2026-09-09)
+
+
+### Dependencies
+
+* bump org.apache.maven.plugin-tools:maven-plugin-annotations ([#88](https://github.com/fluxzero-io/lychee-maven-plugin/issues/88)) ([1f28d68](https://github.com/fluxzero-io/lychee-maven-plugin/commit/1f28d684da1040be3e9c2fd816d252180a49957e))
+
 ## [0.2.16](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.15...lychee-maven-plugin-v0.2.16) (2026-09-09)
 
 
