@@ -114,9 +114,9 @@ This generates standard Maven Plugin documentation from descriptors in `target/s
 - Site publish workflow: `.github/workflows/pages.yml` (publishes Maven site to GitHub Pages)
 - Automated versioning/releases: `.github/workflows/release-please.yml` (creates release PRs, tags and GitHub releases)
 - Bot PR automerge: `.github/workflows/bot-auto-merge.yml` (enables automerge for `dependabot[bot]` and `release-please[bot]`)
-- Publish workflow: `.github/workflows/release.yml` (publishes to Fluxzero Packages first, then Maven Central on release tags)
+- Publish workflow: `.github/workflows/release.yml` (publishes release tags to Fluxzero Packages; before 1 October 2026 it subsequently publishes to Maven Central)
 - Dependabot updates: `.github/dependabot.yml` (Maven + GitHub Actions)
-- Maven Central release expects repository secrets:
+- Maven Central publication before the cutoff expects repository secrets:
   - `CENTRAL_USERNAME`
   - `CENTRAL_TOKEN`
   - `GPG_PRIVATE_KEY`
@@ -124,7 +124,7 @@ This generates standard Maven Plugin documentation from descriptors in `target/s
 - `./mvnw -Prelease deploy` publishes signed artifacts to `https://packages.fluxzero.io/publish/maven`.
   GitHub Actions uses `.github/maven-settings.xml` with a short-lived OIDC token;
   the audience is `https://packages.fluxzero.io/publish/maven`.
-- `./mvnw -Prelease,central deploy` runs the existing Central publishing extension.
+- `./mvnw -Prelease,central deploy` runs the Central publishing extension for pre-cutoff recovery.
   Both profiles retain plugin metadata, sources, Javadoc and GPG signatures.
 - SBOMs are generated during `verify` at `target/bom.xml` and `target/bom.json` and uploaded by CI/release workflows.
 
