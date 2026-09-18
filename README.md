@@ -161,3 +161,18 @@ The invoker suite covers all plugin configuration parameters with real Maven bui
 - If no sidecar is available for an older official release, verification is skipped with a warning unless `expectedSha256` is set.
 - If you override `downloadBaseUrl` to a custom mirror/location, checksum verification is skipped with a warning.
 - If you use a custom mirror and still want integrity checks, set `expectedSha256`.
+
+## Maven files in GitHub Releases
+
+Future GitHub Releases also retain the exact files published to Fluxzero
+Packages: POMs, JARs and attached artifacts, signatures, and available checksum
+sidecars. The workflow downloads these bytes from Packages rather than taking
+files from a later Central build. Existing distribution assets are preserved.
+Use an exact asset filename when downloading a particular JAR; a broad `*.jar`
+pattern also matches sources, Javadoc and other modules.
+
+The collector (`.github/scripts/collect-maven-assets.py`) verifies checksums and
+fails on missing required files or duplicate flat asset names. Maven workflows
+obtain the file list from completed deploy transfers. Mutable repository-wide
+`maven-metadata.xml` and directory indexes are not release assets. No manifest,
+archive, historical backfill or restore tool is generated.
