@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.22](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.21...lychee-maven-plugin-v0.2.22) (2026-10-10)
+
+
+### Dependencies
+
+* bump actions/upload-artifact from 7.0.1 to 7.0.2 ([#108](https://github.com/fluxzero-io/lychee-maven-plugin/issues/108)) ([5b254ef](https://github.com/fluxzero-io/lychee-maven-plugin/commit/5b254ef428d877c4272fb94b3e87daec8e8e4bfa))
+
 ## [0.2.21](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.20...lychee-maven-plugin-v0.2.21) (2026-10-01)
 
 
