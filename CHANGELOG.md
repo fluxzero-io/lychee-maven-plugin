@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.23](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.22...lychee-maven-plugin-v0.2.23) (2026-10-16)
+
+
+### Dependencies
+
+* bump org.sonatype.central:central-publishing-maven-plugin ([#111](https://github.com/fluxzero-io/lychee-maven-plugin/issues/111)) ([129582f](https://github.com/fluxzero-io/lychee-maven-plugin/commit/129582f9be374e8abe3f3cff39e26e098f0a4cde))
+
 ## [0.2.22](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.21...lychee-maven-plugin-v0.2.22) (2026-10-10)
 
 
