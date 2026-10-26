@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.25](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.24...lychee-maven-plugin-v0.2.25) (2026-10-26)
+
+
+### Dependencies
+
+* bump org.apache.maven.plugins:maven-surefire-plugin ([#117](https://github.com/fluxzero-io/lychee-maven-plugin/issues/117)) ([3ef4249](https://github.com/fluxzero-io/lychee-maven-plugin/commit/3ef4249b91b37949f91c06d4f1f7bfc87d6ea81c))
+
 ## [0.2.24](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.23...lychee-maven-plugin-v0.2.24) (2026-10-19)
 
 
