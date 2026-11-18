@@ -3,7 +3,7 @@
 
   <groupId>io.fluxzero</groupId>
   <artifactId>lychee-maven-plugin</artifactId>
-  <version>0.2.30-SNAPSHOT</version>
+  <version>0.2.31-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Lychee Maven Plugin</name>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.30](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.29...lychee-maven-plugin-v0.2.30) (2026-11-17)
+
+
+### Dependencies
+
+* bump org.codehaus.plexus:plexus-utils from 4.1.0 to 4.2.0 ([#132](https://github.com/fluxzero-io/lychee-maven-plugin/issues/132)) ([39bcf83](https://github.com/fluxzero-io/lychee-maven-plugin/commit/39bcf836fb230a5eb1b5fa2ec0548055170e2447))
+
 ## [0.2.29](https://github.com/fluxzero-io/lychee-maven-plugin/compare/lychee-maven-plugin-v0.2.28...lychee-maven-plugin-v0.2.29) (2026-11-16)
 
 
